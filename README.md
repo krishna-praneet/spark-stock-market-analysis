@@ -32,7 +32,7 @@ The following models are to be used and compared to finalize the best performing
    g. Seaborn <br>
 2. DynamoDB
 # Instructions followed for DynamoDb.
-Here's a step-by-step guide on how to create a DynamoDB table, load data into it from a JSON file using the AWS CLI, and access the data from Python using the boto3 library:
+Here's a step-by-step guide on how to create a DynamoDB table, load data into it from a JSON file using the AWS CLI and boto3(library), and access the data from Python using the boto3 library:
 1. First, make sure you have an AWS account and have installed the AWS CLI and boto3 library on your machine.
 2. Next, create a new DynamoDB table. You can do this through the AWS Management Console or using the AWS CLI. Here's an example command to create a table with the name "myTable", a partition key  and a sort key:<br>
    a. aws dynamodb create-table --table-name myTable
