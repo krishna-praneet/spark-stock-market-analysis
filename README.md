@@ -19,7 +19,7 @@ The following models are to be used and compared to finalize the best performing
 
 1. CNN
 2. LSTM
-3. Tree Regressor
+3. Decision Tree Regressor
 
 # Software tech stack:
 1. Python:
@@ -31,3 +31,7 @@ The following models are to be used and compared to finalize the best performing
         f. Matplotlib
         g. Seaborn
 2. DynamoDB
+
+# To do:
+1. Train the ML models to compare and tune the best-performing model
+2. Build a dashboard that users may view that shows stocks in the decreasing order of ROI
