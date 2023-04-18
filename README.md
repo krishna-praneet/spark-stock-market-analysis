@@ -22,14 +22,14 @@ The following models are to be used and compared to finalize the best performing
 3. Decision Tree Regressor
 
 # Software tech stack:
-1. Python:
-        a. SparkSQL
-        b. SparkMLLib
-        c. Boto3
-        d. Pandas
-        e. Numpy
-        f. Matplotlib
-        g. Seaborn
+1. Python: <br>
+   a. SparkSQL <br>
+   b. SparkMLLib <br>
+   c. Boto3 <br>
+   d. Pandas <br>
+   e. Numpy <br>
+   f. Matplotlib <br>
+   g. Seaborn <br>
 2. DynamoDB
 
 # To do:
