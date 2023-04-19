@@ -31,6 +31,7 @@ The following models are to be used and compared to finalize the best performing
    f. Matplotlib <br>
    g. Seaborn <br>
 2. DynamoDB
+
 # Instructions followed for DynamoDb.
 Here's a step-by-step guide on how to create a DynamoDB table, load data into it from a JSON file using the AWS CLI and boto3(library), and access the data from Python using the boto3 library:
 1. First, make sure you have an AWS account and have installed the AWS CLI and boto3 library on your machine.
@@ -38,6 +39,13 @@ Here's a step-by-step guide on how to create a DynamoDB table, load data into it
    a. aws dynamodb create-table --table-name myTable
 3. Once the table is created, you can load data into it from a JSON file using the AWS CLI or boto3(Replace ACCESS_KEY and SECRET_KEY with your actual access and secret keys for DynamoDB.). Make sure you have a JSON file containing an array of JSON objects. Each object represents a single item to be added to the table.
 4. You can then access the data from Python using the boto3 library.
+
+# Instructions to run the code:
+1. Install the necessary packages listed in the requirements.txt file using the following command:
+
+   `pip install -r requirements.txt`
+
+2. Download dataset and add it to path `stock_market_data/` relative to the `data_preprocess.py` file.
 
 # To do:
 1. Train the ML models to compare and tune the best-performing model
