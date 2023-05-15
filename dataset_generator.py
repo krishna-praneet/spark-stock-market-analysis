@@ -25,7 +25,11 @@ count = 0
 
 full_path = 'stock_market_data/nasdaq/csv/*.csv'
 dire = os.getcwd() + '/' + 'stock_market_data/nasdaq/csv/'
-schema = StructType([StructField('Date', StringType(), True), StructField('Open', DoubleType(), True), StructField('Close', DoubleType(), True), StructField('High',DoubleType(), True), StructField('Low', DoubleType(), True), StructField('Adj Close', DoubleType(), True), StructField('Volume', DoubleType(), True), StructField('Stock', StringType(), True)])
+
+schema = StructType([StructField('Date', StringType(), True), StructField('Low', DoubleType(), True), 
+                     StructField('Open', DoubleType(), True), StructField('Volume',DoubleType(), True), 
+                     StructField('High', DoubleType(), True), StructField('Close', DoubleType(), True), 
+                     StructField('Adj Close', DoubleType(), True), StructField('Stock', StringType(), True)])
 
 df = spark.read.format('csv').option('header', 'true').schema(schema).load(full_path).withColumn('Stock', input_file_name())
 df = df.withColumn('Stock', regexp_replace('Stock', 'file:' + dire, ''))
