@@ -11,13 +11,115 @@
     <link href="http://fonts.googleapis.com/css?family=Cookie" rel="stylesheet" type="text/css">
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="../assets/logo.jpeg" />
-    <style>
+    <head>
+        <style>
+            .time-series {
+                margin: 3% 32% 15% 27%;
+                width: 45%;
+                height: 70%;
+                border: 2px solid black;
+                border-radius: 10px;
+                padding: 40px;
+            }
 
-    </style>
+            body {
+                background-image: url('../assets/background.jpg');
+            }
+
+            .prediction {
+                margin: 10px;
+                display: block;
+                align-items: center;
+                width: 90%;
+            }
+
+            .stock-heading {
+                font-size: large;
+                margin: 10px 5px 10px 5px;
+            }
+
+            .show-prediciton {
+                padding: 5px;
+                margin-top: 15px;
+                background-color: #2997bc;
+                border-radius: 5px;
+            }
+
+            #stock-list {
+                border-radius: 5px;
+                background-color: #c4ebea;
+                padding: 2px;
+            }
+
+            h1 {
+                text-align: center;
+                margin-top: 30px;
+            }
+
+            .description {
+                font-size: larger;
+                text-align: center;
+                margin-top: 10px;
+                color: #053067;
+            }
+
+        </style>
+    </head>
+    <body>
+        <h1> Dashboard to view stock details and predictions</h1>
+        <div class="time-series">
+            <h4>Please select a stock name from the dropdown to see its details:</h4>
+            <select id="stock-list">
+            </select>
+            <br/>
+            <button onclick="showPrediction()" class="show-prediciton">Show Prediction</button>
+        </div> 
+    </body>
     <script type="text/javascript">
+        var stocks = ['GT', 'KLIC', 'OTTR', 'SGC', 'PHI']
+        var stockDescription = {
+            'GT': 'Goodyear Tire & Rubber Co',
+            'KLIC': 'Kulicke and Soffa Industries Inc.',
+            'OTTR': 'Otter Tail Corporation',
+            'SGC': 'Superior Group of Companies Inc',
+            'PHI': 'PLDT Inc ADR'
+        }
+        var stockList = document.getElementById('stock-list');
+
+        for(stock of stocks) {
+            var option = document.createElement('option')
+            option.value = stock
+            option.innerHTML = stock
+            stockList.appendChild(option);
+        }
+
+        function showPrediction() {
+            var stockList = document.getElementById('stock-list');
+            selectedStock = stockList.value
+            
+            var description = document.createElement('div')
+            description.classList = ['description']
+            description.innerHTML = stockDescription[selectedStock]
+
+            var heading = document.createElement('div')
+            heading.classList = ['stock-heading']
+            heading.innerHTML = 'Predictions for stock ' + selectedStock  + ' is:'
+
+            var img = document.createElement('img');
+            img.src = '../assets/predictions/'+selectedStock+'.jpeg'; 
+            img.classList = ['prediction']
+
+            var div = document.getElementsByClassName('outputs')
+            if(div.length>0) div[0].remove();
+            var newdiv = document.createElement('div');
+            newdiv.classList = ['outputs']
+            newdiv.append(description)
+            newdiv.appendChild(heading);
+            newdiv.appendChild(img);
+
+            var timeSeries = document.getElementsByClassName('time-series');
+            timeSeries[0].appendChild(newdiv);
+        }
 
     </script>
-    <body>
-
-    </body>
 </html>
