@@ -8,26 +8,19 @@ from pyspark.ml import Pipeline
 from pyspark.ml.feature import OneHotEncoder, VectorAssembler, StringIndexer
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
-from pyspark.ml.classification import MultilayerPerceptronClassifier
-from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-from pyspark.ml.feature import VectorAssembler
-from pyspark.ml.feature import Normalizer
-from pyspark.ml import Pipeline
-from pyspark.ml.regression import FMRegressor
-from pyspark.ml.feature import MinMaxScaler
 import matplotlib.pyplot as plt
 
 print(os.getcwd())
 
 top_10 = ['GT', 'TXN', 'DIOD', 'MSEX', 'VLGEA', 'KLIC', 'OTTR', 'SGC', 'PHI', 'APOG']
-rmse_metric = []
+rmse_metric = {}
+auc_metric = {}
 
 for stock in top_10:
-
-    # Set the path to the JSON file in your Google Drive
+    # Set the path to the JSON file in your machine
     json_file_path = os.getcwd() + '/../../dataset/' + stock + '-dataset.json/data.json'
-    model_path = os.getcwd() + '/../../Model/fmregressor/' + stock
-    plot_path = os.getcwd() + '/../../outputs/fmregressor/' + stock
+    model_path = os.getcwd() + '/../../Model/random-forest-regression/' + stock
+    plot_path = os.getcwd() + '/../../outputs/random-forest-regression/' + stock
 
     # Create a SparkSession
     spark = SparkSession.builder.appName("CreateDataFrameFromJSON").config("spark.executor.memory", "64g").config("spark.driver.memory", "64g").getOrCreate()
@@ -41,9 +34,10 @@ for stock in top_10:
     df.show()
 
     df_sort_final = df.sample(fraction=1.00, seed=42)
-    df_sort_final = df_sort_final.orderBy('Date').collect()
+    df_sort_final.orderBy('Date').collect()
+    
 
-    # Show the sampled DataFrame
+    # df_sample.show()
     w = Window.partitionBy().orderBy("Date")
     
     # Extract date features
@@ -52,7 +46,7 @@ for stock in top_10:
     w14 = (Window.orderBy(col("Date").cast('long')).rangeBetween(-days(14), -days(1)))
     w141 = (Window.orderBy(col("Date").cast('long')).rangeBetween(-days(14), 0))
 
-    df_sort_final = df_sort_final.withColumn('Date', col('Date').cast('timestamp'))
+    df_sort_final =df_sort_final.withColumn('Date', col('Date').cast('timestamp'))
     df_sort_final = df_sort_final.withColumn("Year", year(df_sort_final["date"]))
     df_sort_final = df_sort_final.withColumn("Month", month(df_sort_final["date"]))
     df_sort_final = df_sort_final.withColumn("Day", dayofmonth(df_sort_final["date"]))
@@ -62,7 +56,6 @@ for stock in top_10:
     df_sort_final = df_sort_final.withColumn("14DTP", avg(col("TP")).over(w141))
     df_sort_final = df_sort_final.withColumn("14MD", avg(abs(col("TP") - col("14DTP"))).over(w141))
     df_sort_final = df_sort_final.withColumn("label", col('Close'))
-
     df_sort_final = df_sort_final.na.drop(subset=['SMA', 'TP'])
     avgVolume = df_sort_final.agg({'Volume': 'avg'}).collect()[0][0]
     df_sort_final = df_sort_final.withColumn("Volume", col('Volume')/avgVolume)
@@ -72,12 +65,14 @@ for stock in top_10:
     numRows = df_sort_final.count()
     print("Total number of rows: ", numRows)
 
-    inputCols2 = ['Open', 'High', 'Low', 'Volume', 'Day', 'Month', 'Year', 'SMA', 'TP', '14DTP', '14MD']    
+    inputCols = ['Open', 'High', 'Low', 'Volume', 'Day', 'Month', 'Year', 'SMA', 'TP', '14DTP', '14MD']
 
     # Assemble the feature vector using VectorAssembler
-    assembler = VectorAssembler(inputCols=inputCols2, outputCol="features")
+    assembler = VectorAssembler(inputCols=inputCols, outputCol="features")
     data = assembler.transform(df_sort_final).select("features", "label", "Date")
     data.show()
+
+    labelCol = "label"
 
     # Split the data into training and testing sets
     train = 0.7
@@ -86,28 +81,33 @@ for stock in top_10:
     testingData = data.subtract(trainingData)
     print('Done splitting data')
 
-    # Create a model
-    fm = FMRegressor(featuresCol="features", stepSize=0.001)
-
-    # Create a Pipeline.
-    pipeline = Pipeline(stages=[fm])
-
-    # Train model.
-    print('Fitting data')
-    model = pipeline.fit(trainingData)
-    
-    # Make predictions.
-    print('Making predictions')
+    # Create a Random Forest Regressor object and fit it to the training data
+    rf = RandomForestRegressor(numTrees=100, maxDepth=5, seed=42, labelCol=labelCol)
+    model = rf.fit(trainingData)
+    # # Use the model to make predictions on the testing data
     predictions = model.transform(testingData)
 
-    # Select example rows to display.
-    predictions.select("prediction", "label", "features").show(5)
-
-    # Select (prediction, true label) and compute test error
-    evaluator = RegressionEvaluator(
-        labelCol="label", predictionCol="prediction", metricName="rmse")
+    # # Evaluate the performance of the model using Mean Squared Error
+    evaluator = RegressionEvaluator(labelCol=labelCol, predictionCol="prediction", metricName="rmse")
     rmse = evaluator.evaluate(predictions)
-    print("Root Mean Squared Error (RMSE) on test data = %g" % rmse)
+
+    print(f"Root Mean Squared Error = {rmse}")
+
+    model.write().overwrite().save(model_path)
+
+    model = RandomForestRegressionModel.load(model_path)
+    # # Use the model to make predictions on the testing data
+    predictions = model.transform(testingData)
+
+    # # Evaluate the performance of the model using Mean Squared Error
+    evaluator = RegressionEvaluator(labelCol=labelCol, predictionCol="prediction", metricName="rmse")
+    rmse = evaluator.evaluate(predictions)
+
+    print(f"Root Mean Squared Error from saved model= {rmse}")
+
+    evaluator = BinaryClassificationEvaluator(labelCol=labelCol, rawPredictionCol="prediction", metricName="areaUnderROC")
+    auc = evaluator.evaluate(predictions)
+    print(f"AUC: {auc}")
 
     dates = [row['Date'] for row in predictions.select('Date').collect()]
     actual = [row['label'] for row in predictions.select('label').collect()]
@@ -122,9 +122,10 @@ for stock in top_10:
     plt.title(f'Actual vs Predicted Closing price for stock {stock}, RMSE: {rmse}')
     plt.savefig(plot_path)
 
-    model.write().overwrite().save(model_path)
-    rmse_metric.append(rmse)
+    rmse_metric[stock] = rmse
+    auc_metric[stock] = auc
 
-print("Stock Name\tRMSE")
-for i in range(len(top_10)):
-    print(f'{top_10[i]}\t{rmse_metric[i]}')
+
+print("Stock Name\tMSE")
+for stock in top_10:
+    print(f"{stock}\t{rmse_metric[stock]}")
