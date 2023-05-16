@@ -81,13 +81,13 @@ for data in STOCKS:
     plt.savefig(f'images/{figname}')
     # plt.show()
 
-    dynamodf = pdf.to_dict('records')
-    dynamodb = boto3.resource('dynamodb', aws_access_key_id='AKIA4YX3MJOJUKUMDZ4M', 
-                              aws_secret_access_key='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',region_name='us-east-1')
-    table_name = 'Nasdaq'
-    table = dynamodb.Table(table_name)
+    # dynamodf = pdf.to_dict('records')
+    # dynamodb = boto3.resource('dynamodb', aws_access_key_id='AKIA4YX3MJOJUKUMDZ4M', 
+    #                           aws_secret_access_key='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',region_name='us-east-1')
+    # table_name = 'Nasdaq'
+    # table = dynamodb.Table(table_name)
     
-    for item in dynamodf:
-        table.put_item(Item=item)
+    # for item in dynamodf:
+    #     table.put_item(Item=item)
 
 
