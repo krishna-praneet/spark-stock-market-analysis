@@ -6,30 +6,34 @@ Stock Market Prediction using Python
 2. Archana Ganesh 
 3. Shubham Patel 
 
-Equal contribution from all the team members through pair programming. 
+# Division of work
+1. Shubham Patel - Data collection and preprocessing, Random Forest Classification
+2. Krishna Praneet Gudipaty - Feature Generation, FM and RF Regression, GPU  
+3. Archana Ganesh - LSTM Classification and  Regression, Dashboard
+
+Pair programming in all stages of the project
 
 # Dataset used: 
-Nasdaq dataset
+Nasdaq dataset from Kaggle
 
 # Goal: 
-To build a stock recommendation system using Python to predict and suggest stocks with be best ROI.
+The goal is to build a stock recommendation system using Python to predict the closing price and suggest stocks.
 
 # Machine Learning models used: 
 The following models are to be used and compared to finalize the best performing one for the prediction model.
 
-1. CNN
+1. Random forest regressor
 2. LSTM
-3. Decision Tree Regressor
+3. Factorization Machines regressor
 
 # Software tech stack:
 1. Python: <br>
    a. SparkSQL <br>
    b. SparkMLLib <br>
-   c. Boto3 <br>
-   d. Pandas <br>
-   e. Numpy <br>
-   f. Matplotlib <br>
-   g. Seaborn <br>
+   c. Pandas <br>
+   d. Numpy <br>
+   e. Matplotlib <br>
+   f. Torch <br>
 2. DynamoDB
 
 # Instructions followed for DynamoDb.
@@ -47,6 +51,20 @@ Here's a step-by-step guide on how to create a DynamoDB table, load data into it
 
 2. Download dataset and add it to path `stock_market_data/` relative to the `data_preprocess.py` file.
 
-# To do:
-1. Train the ML models to compare and tune the best-performing model
-2. Build a dashboard that users may view that shows stocks in the decreasing order of ROI
+3. To generate the data set in the suitable format, run in src/processing after editing the path the data needs to be stored, in the file:
+
+   `python3 dataset_generator.py`
+
+4. To run the LSTM regressor, check the path of the dataset and modify the path to store the model and run in src/models:
+
+   `python3 lstm_regression.py`
+
+5. To run the FM regressor, check the path of the dataset and modify the path to store the model and run in src/models:
+
+   `python3 fm_regression.py`
+
+6. To run the Random Forest regressor, check the path of the dataset and modify the path to store the model and run in src/models:
+
+   `python3 random_forest_regression.py`
+
+7. To view the dashboard, open `dashbord.html ` in the browser. Select a stock from the dropdown to view its details and trend
