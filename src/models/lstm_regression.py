@@ -51,9 +51,7 @@ for stock in top_10:
 
     # df_sample.show()
     w = Window.partitionBy().orderBy("Date")
-    # df_sort_final = df.withColumn('diffOpenClose', df_sort_final.Open - df_sort_final.Close)
-    # df_sort_final = df_sort_final.withColumn('diffHighLow', df_sort_final.High - df_sort_final.Low)
-    # df_sort_final = df_sort_final.withColumn('target', when(lag(df.Close).over(w) < df.Close, 1).otherwise(0))
+    
     # Extract date features
     days = lambda i: i * 86400
     w1 = (Window.orderBy(col("Date").cast('long')).rangeBetween(-days(1), 0))
